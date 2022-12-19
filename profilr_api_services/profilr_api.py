@@ -1,5 +1,5 @@
 from .base import APIService
-from django.conf import settings
+from profilr_api_service.conf import conf
 
 
 class ProfilrApi(APIService):
@@ -14,4 +14,4 @@ class ProfilrApi(APIService):
         return self.do_request("profile/", user_token, no_cache=True).json()
 
 
-profilr_api_service = ProfilrApi(f"{settings.PROFILR_API_URL}/v1")
+profilr_api_service = ProfilrApi(f"{conf.PROFILR_API_URL}/v1")

@@ -2,7 +2,7 @@ import copy
 
 from .base import APIService
 from .exceptions import ApiServiceNotFoundException
-from django.conf import settings
+from profilr_api_service.conf import conf
 from requests import Response
 
 DEFAULT_FILTERS = {
@@ -97,7 +97,7 @@ class MSBService(APIService):
         return self.do_request("msb/afdelingen", user_token, cache_timeout=60 * 60 * 24)
 
     def get_afdeling_relaties(self, user_token, afdeling_id):
-        if not settings.ENABLE_AFDELING_RELATIES_ENDPOINT:
+        if not conf.MSB_ENABLE_AFDELING_RELATIES_ENDPOINT:
             return {"success": True, "result": {}}
         return self.do_request(
             f"msb/afdeling/{afdeling_id}", user_token, cache_timeout=60 * 60 * 24
@@ -121,7 +121,7 @@ class MSBService(APIService):
             y: 438634
         }
         """
-        if settings.MSB_API_URL.startswith("https://diensten.rotterdam.nl"):
+        if conf.MSB_API_URL.startswith(conf.MSB_API_URL_PRODUCTION):
             return {
                 "success": True,
                 "result": "Melding ******* is aangemaakt.",
@@ -173,7 +173,7 @@ class MSBService(APIService):
             "fotos":[{}]
         }
         """
-        if settings.ENABLE_MELDING_AFHANDELEN:
+        if conf.MSB_ENABLE_MELDING_AFHANDELEN:
             response = self.do_request(
                 f"msb/melding/{melding_id}/afhandelen",
                 user_token,
@@ -186,4 +186,4 @@ class MSBService(APIService):
         return self.get_detail(melding_id, user_token)
 
 
-msb_api_service = MSBService(f"{settings.MSB_API_URL}/sbmob/api")
+msb_api_service = MSBService(f"{conf.MSB_API_URL}/sbmob/api")
