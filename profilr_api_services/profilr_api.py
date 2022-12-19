@@ -1,5 +1,5 @@
 from .base import APIService
-from profilr_api_service.conf import conf
+from .conf import conf
 
 
 class ProfilrApi(APIService):

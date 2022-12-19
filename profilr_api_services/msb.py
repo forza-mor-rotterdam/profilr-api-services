@@ -2,7 +2,7 @@ import copy
 
 from .base import APIService
 from .exceptions import ApiServiceNotFoundException
-from profilr_api_service.conf import conf
+from .conf import conf
 from requests import Response
 
 DEFAULT_FILTERS = {
