@@ -53,7 +53,8 @@ class MSBService(APIService):
         return bool(response_data.get("success")), response_data.get("result")
 
     def get_user_info(self, user_token):
-        return self.do_request("gebruikerinfo", user_token, no_cache=True, raw_response=True)
+        response = self.do_request("gebruikerinfo", user_token, no_cache=True, raw_response=True)
+        return response.json()
 
     def get_list(self, user_token, data={}, no_cache=False):
         return self.do_request(
