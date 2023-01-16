@@ -3,7 +3,7 @@ from profilr_api_services.default_incident_api import DefaultIncidentAPIService
 from .exceptions import ApiServiceNotFoundException
 from .conf import conf
 from requests import Response
-from typing import TypedDict, List, cast, Union
+from typing import TypedDict, List, cast, Union, Any
 
 DEFAULT_FILTERS = {
     "wijken": [],
@@ -32,7 +32,7 @@ class MsbResponseType(TypedDict, totals=False):
 
 class MSBService(DefaultIncidentAPIService):
 
-    def validate_filters(self, filters: UnValidatedFiltersType) -> ValidatedFiltersType:
+    def validate_filters(self, filters: Any) -> ValidatedFiltersType:
         valid_filters: ValidatedFiltersType = copy.deepcopy(cast(ValidatedFiltersType, filters))
         {
             k: v if type(v) == list else [v] if type(v) in [str, int, float] else []
