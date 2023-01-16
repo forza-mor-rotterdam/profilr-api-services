@@ -21,7 +21,7 @@ class ValidatedFiltersType(TypedDict):
     buurten: List[str]
     onderwerpItems: List[str]
 
-class MsbResponseType(TypedDict, totals=False):
+class MsbResponseType(TypedDict):
     success: TypedDict
     result: list[dict] | str
 
