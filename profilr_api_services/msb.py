@@ -1,9 +1,10 @@
 import copy
 
-from .base import APIService
+from .default_incident_api import DefaultIncidentAPIService
 from .exceptions import ApiServiceNotFoundException
 from .conf import conf
 from requests import Response
+from typing import TypedDict, List, cast, Union
 
 DEFAULT_FILTERS = {
     "wijken": [],
@@ -13,27 +14,42 @@ DEFAULT_FILTERS = {
     "onderwerpItems": [],
 }
 DEFAULT_PROFILE = {"filters": DEFAULT_FILTERS}
-VALID_FILTERS = ("wijken", "buurten", "afdelingen", "groepen", "onderwerpItems")
+VALID_FILTERS = ("buurten", "afdelingen", "onderwerpItems")
 
+class UnValidatedFiltersType(TypedDict, totals=False):
+    pass
 
-class MSBService(APIService):
-    def validate_filters(self, filters: dict) -> dict:
-        filters = copy.deepcopy(filters)
+class ValidatedFiltersType(TypedDict):
+    afdelingen: List[str]
+    buurten: List[str]
+    onderwerpItems: List[str]
+
+class MsbResultType(TypedDict, totals=False):
+    pass
+
+class MsbResponseType(TypedDict, totals=False):
+    success: TypedDict
+    result: Union[List[MsbResultType], str]
+
+class MSBService(DefaultIncidentAPIService):
+
+    def validate_filters(self, filters: UnValidatedFiltersType) -> ValidatedFiltersType:
+        valid_filters: ValidatedFiltersType = copy.deepcopy(cast(ValidatedFiltersType, filters))
         {
             k: v if type(v) == list else [v] if type(v) in [str, int, float] else []
-            for k, v in filters.items()
+            for k, v in valid_filters.items()
             if k in VALID_FILTERS
         }
         for k in VALID_FILTERS:
-            if not filters.get(k):
-                filters[k] = []
-        return filters
+            if not valid_filters.get(k):
+                valid_filters[k] = []
+        return valid_filters
 
-    def process_response(self, response: Response) -> tuple[list, dict]:
-        response = response.json()
-        return response.get("result")
+    def process_response(self, response: Response) -> Union[List[MsbResultType], str]:
+        response_dict: MsbResponseType = response.json()
+        return response_dict.get("result")
 
-    def logout(self):
+    def logout(self) -> MsbResultType:
         return self.do_request("logout", no_cache=True)
 
     def login(self, username: str, password: str):
@@ -44,7 +60,7 @@ class MSBService(APIService):
         response_data = self.do_request(
             "login",
             user_token=None,
-            method=APIService.POST,
+            method=MSBService.POST,
             data=data,
             no_cache=True,
             raw_response=True,
@@ -58,7 +74,7 @@ class MSBService(APIService):
 
     def get_list(self, user_token, data={}, no_cache=False):
         return self.do_request(
-            "msb/openmeldingen", user_token, APIService.POST, data, no_cache
+            "msb/openmeldingen", user_token, MSBService.POST, data, no_cache
         )
 
     def get_detail(self, melding_id, user_token):
@@ -141,7 +157,7 @@ class MSBService(APIService):
             "msb/melding",
             user_token,
             data=data,
-            method=APIService.POST,
+            method=MSBService.POST,
             no_cache=True,
             raw_response=True,
         )
@@ -179,7 +195,7 @@ class MSBService(APIService):
                 f"msb/melding/{melding_id}/afhandelen",
                 user_token,
                 data=data,
-                method=APIService.POST,
+                method=MSBService.POST,
                 no_cache=True,
                 raw_response=True,
             )
@@ -187,4 +203,4 @@ class MSBService(APIService):
         return self.get_detail(melding_id, user_token)
 
 
-msb_api_service = MSBService(f"{conf.MSB_API_URL}/sbmob/api")
+# incident = MSBService(f"{conf.MSB_API_URL}/sbmob/api")

@@ -1,17 +1,14 @@
-from .base import APIService
+from .default_profile_api import DefaultProfileApi
 from .conf import conf
 
 
-class ProfilrApi(APIService):
+class ProfilrApi(DefaultProfileApi):
     _json_enabled = True
 
     def set_profile(self, user_token, data):
         return self.do_request(
-            "profile/", user_token, method=APIService.POST, data=data, no_cache=True
+            "profile/", user_token, method=ProfilrApi.POST, data=data, no_cache=True
         ).json()
 
     def get_profile(self, user_token):
         return self.do_request("profile/", user_token, no_cache=True).json()
-
-
-profilr_api_service = ProfilrApi(f"{conf.PROFILR_API_URL}/v1")
