@@ -1,6 +1,5 @@
 import copy
-
-from .default_incident_api import DefaultIncidentAPIService
+from profilr_api_services.default_incident_api import DefaultIncidentAPIService
 from .exceptions import ApiServiceNotFoundException
 from .conf import conf
 from requests import Response
