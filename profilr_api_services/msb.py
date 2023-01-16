@@ -1,3 +1,4 @@
+from __future__ import annotations
 import copy
 from profilr_api_services.default_incident_api import DefaultIncidentAPIService
 from .exceptions import ApiServiceNotFoundException
@@ -15,20 +16,14 @@ DEFAULT_FILTERS = {
 DEFAULT_PROFILE = {"filters": DEFAULT_FILTERS}
 VALID_FILTERS = ("buurten", "afdelingen", "onderwerpItems")
 
-class UnValidatedFiltersType(TypedDict, totals=False):
-    pass
-
 class ValidatedFiltersType(TypedDict):
     afdelingen: List[str]
     buurten: List[str]
     onderwerpItems: List[str]
 
-class MsbResultType(TypedDict, totals=False):
-    pass
-
 class MsbResponseType(TypedDict, totals=False):
     success: TypedDict
-    result: Union[List[MsbResultType], str]
+    result: list[dict] | str
 
 class MSBService(DefaultIncidentAPIService):
 
@@ -44,11 +39,11 @@ class MSBService(DefaultIncidentAPIService):
                 valid_filters[k] = []
         return valid_filters
 
-    def process_response(self, response: Response) -> Union[List[MsbResultType], str]:
-        response_dict: MsbResponseType = response.json()
+    def process_response(self, response: Response) -> list[dict] | dict | str:
+        response_dict: dict = response.json()
         return response_dict.get("result")
 
-    def logout(self) -> MsbResultType:
+    def logout(self) -> dict:
         return self.do_request("logout", no_cache=True)
 
     def login(self, username: str, password: str):
