@@ -1,7 +1,7 @@
 from .base import APIService
 
 
-class IncidentAPIService(APIService):
+class DefaultIncidentAPIService(APIService):
     def validate_filters(self):
         raise NotImplementedError("You must implement validate_filters")
 
@@ -11,7 +11,7 @@ class IncidentAPIService(APIService):
     def login(self):
         raise NotImplementedError("You must implement login")
 
-    def get_user_info(self, user_token):
+    def get_user_info(self):
         raise NotImplementedError("You must implement get_user_info")
 
     def get_list(self):
